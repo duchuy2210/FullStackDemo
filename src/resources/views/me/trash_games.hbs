@@ -1,0 +1,143 @@
+<form class="mt-4" name="container-form" method="POST" action="/games/handle-trash-form-actions">
+    <a class="btn btn-secondary" href="/me/stored/games">Trở lại</a>
+    <div class="mt-4 d-lg-flex align-items-center">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
+                <label class="form-check-label" for="checkbox-all">Chọn tất cả</label>
+            </div>
+
+            <select name="action" class="form-select checkbox" required aria-label="Default select example">
+                <option value="" selected>Chọn hành động</option>
+                <option value="delete">Xoá Vĩnh Viễn</option>
+                <option value="restore">Khôi Phục</option>
+            </select>
+
+            <button type="submit" class="btn btn-sm btn-warning btn-checkbox-submit disabled">Thực hiện</button>
+    </div>
+    <table class="mt-3 table table-info table-striped table-bordered">
+        <thead class="table-danger">
+            <tr>
+                <th scope="col"></th>  
+                <th scope="col">#</th>
+                <th scope="col">Tên game</th>
+                <th scope="col">Loại game</th>
+                <th scope="col">Thời gian tạo</th>
+                <th scope="col">Option</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each games}}
+                <tr>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="{{this._id}}" name="gameIds[]">
+                        </div>
+                    </td>
+                    <th scope="row">{{sum @index 1}}</th> {{!-- Khai báo function helpers cộng --}}
+                    <td>{{this.name}}</td>
+                    <td>{{this.type}}</td>
+                    <td>{{time this.updatedAt this.createdAt}}</td>
+                    <td>
+                        <a href="{{!-- /games/{{_id}}/restore --}}" data-id="{{this._id}}" class="btn btn-warning btn-restore">Khôi Phục</a>
+                        <button type="button" class="btn btn-danger" data-name="{{this.name }}" data-id="{{this._id}}" data-bs-toggle="modal" data-bs-target="#exampleModal">Xoá vĩnh viễn</button>
+                    </td>
+                
+            {{else}}
+                <tr>
+                    <td class="text-center" colspan="6">
+                        Thùng rác không chứa khoá học nào
+                        <a class="btn btn-primary" href="/me/stored/games">Trở lại</a>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Chú ý !!!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Trở lại</button>
+                <button id="btn-delete-game" type="button" class="btn btn-danger">Chắc chắn</button>
+            </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<form id="delete-form" method="POST" {{!-- action="/games/{{game._id}}?_method=DELETE" --}}>
+
+</form>
+
+<form id="restore-form" method="POST" {{!-- action="/games/{{game._id}}?_method=PATCH" --}}>
+
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", ()=>{
+        var exampleModal = document.getElementById('exampleModal')
+        var btnDeleteGame = document.getElementById('btn-delete-game')
+        var deleteForm = document.getElementById('delete-form')
+        var restoreForm = document.getElementById('restore-form')
+        var restoreBtn = $('.btn-restore')
+        var checkboxAllBtn = $('#checkbox-all')
+        var checkboxItemBtn = $('input[name="gameIds[]"]');
+        var checkboxSubmitBtn = $('.btn-checkbox-submit');
+        var id;
+
+        //khi bấm vào nút delete
+        exampleModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget
+
+                id = button.getAttribute('data-id')
+            var name = button.getAttribute('data-name')
+        
+            var modalTitle = exampleModal.querySelector('.modal-title')
+            var modalBodyInput = exampleModal.querySelector('.modal-body')
+            //sữa lại modalinput
+            modalBodyInput.innerHTML = 'Bạn có muốn xoá '+ name;
+        })
+
+        //sau khi xác nhận xoá thì xoá
+        btnDeleteGame.onclick = ()=>{
+            deleteForm.setAttribute("action", "/games/" + id +"/destroy?_method=DELETE");
+            deleteForm.submit();
+        }
+        //lắng nghe khi click vào nút khôi phục
+        restoreBtn.click(function(e){
+            e.preventDefault();
+            var gamesID = $(this).data('id');//lấy id của element
+            console.log(restoreForm);
+            restoreForm.setAttribute("action", "/games/" + gamesID +"/restore?_method=PATCH");
+            restoreForm.submit();
+        });
+
+        //sử lý các nut checkbox chọn tất cả
+        checkboxAllBtn.change(function(){
+            isChecked = checkboxAllBtn.prop('checked');
+            checkboxItemBtn.prop('checked', isChecked);
+            renderCheckboxSubmitBtn()
+        })
+        //Xử lý checkbox cho từng phần tử
+        checkboxItemBtn.change(function(){
+            var isChecked = checkboxItemBtn.length === $('input[name="gameIds[]"]:checked').length
+            checkboxAllBtn.prop('checked', isChecked);
+            renderCheckboxSubmitBtn()
+        })
+        //Xử lý disabled button thực hiện
+        function renderCheckboxSubmitBtn() {
+            var checkboxBtnQty = $('input[name="gameIds[]"]:checked').length;
+            if(checkboxBtnQty > 0){
+                    checkboxSubmitBtn.removeClass('disabled');
+            }else{
+                    checkboxSubmitBtn.addClass('disabled');
+            }
+        }
+    })
+</script>

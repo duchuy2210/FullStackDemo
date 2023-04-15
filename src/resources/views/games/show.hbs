@@ -1,0 +1,18 @@
+<div class="mt-5">
+    <div class="row">
+        <div class="col-lg-3 text-center">
+            <div class="card" style="width: 18rem;">
+                <img src="{{ game.image }}" alt="" width="100%">
+                <div class="card-body">
+                    <button class="btn btn-danger">Chơi ngay</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9 text-center">
+            <h2>{{game.name}}</h2>
+            <iframe width="840" height="470" src="{{game.video}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <h5>Thể loại: {{ game.type }}</h5>
+        </div>
+    </div>
+</div>
