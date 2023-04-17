@@ -1,6 +1,7 @@
 import express,{json} from 'express';
 import cors from 'cors';
 import { config } from 'dotenv';
+import cookieParser from 'cookie-parser'
 // import cookieParser from 'cookie-parser';
 import  connectDB  from "./config/connectDB";
 import routes from './routes';
@@ -12,7 +13,7 @@ config();
 app.use(cors())
 
 // //Tạo cookie và gắn cookie ở token
-// app.use(cookieParser);
+app.use(cookieParser());
 
 app.use(json())
 

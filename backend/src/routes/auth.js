@@ -8,4 +8,7 @@ router.post("/register",AuthController.registerUser)
 //Login
 router.post("/login",AuthController.loginUser)
 
+//Refresh Token
+router.post("/refresh",AuthController.requestRefreshToken)
+
 export default router
