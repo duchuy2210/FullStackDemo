@@ -20,10 +20,10 @@ const AuthController = {
       });
       //Lưu vào DB
       const user = await newUser.save();
-      res.status(200).json(user);
+      return res.status(200).json(user);
       // res.json(req.body)
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   },
 
@@ -57,7 +57,7 @@ const AuthController = {
       //Lấy username cần tìm trong db
       const user = await User.findOne({ userName: req.body.userName });
       if (!user) {
-        res.status(404).json('Wrong user name');
+        return res.status(404).json('Wrong user name');
       }
 
       //So sánh password xem có đúng hay không
@@ -66,7 +66,7 @@ const AuthController = {
         user.password
       );
       if (!validPassword) {
-        res.status(404).json('wrong password');
+        return res.status(404).json('wrong password');
       }
       if (user && validPassword) {
         //Tạo token
@@ -85,10 +85,10 @@ const AuthController = {
         });
         //Loại password ra kh hiện vào truy xuất user
         const { password, ...others } = user._doc;
-        res.status(200).json({ others, accessToken });
+        return res.status(200).json({ ...others, accessToken });
       }
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   },
 
@@ -129,6 +129,12 @@ const AuthController = {
         .json({ accessToken: newAccessToken, refreshTokenDB });
     });
   },
+
+  logoutUser: async(req,res)=>{
+    //Clear cookies when user logs out
+    res.clearCookie("refresh_token");
+    res.status(200).json("Logged out successfully!");
+  }
 };
 
 export default AuthController;

@@ -3,11 +3,21 @@ import {
   loginFailed,
   loginStart,
   loginSuccess,
+  logOutFailed,
+  logOutStart,
+  logOutSuccess,
   registerFailed,
   registerStart,
   registerSuccess,
-} from './authSlide';
-import { deleteUsersFailed, deleteUsersStart, deleteUsersSuccess, getUsersFailed, getUsersStart, getUsersSuccess } from './userSlide';
+} from './authSlice';
+import {
+  deleteUsersFailed,
+  deleteUsersStart,
+  deleteUsersSuccess,
+  getUsersFailed,
+  getUsersStart,
+  getUsersSuccess,
+} from './userSlice';
 
 export const loginUser = async (user, dispatch, navigate) => {
   //Khi bâm đăng nhập
@@ -49,18 +59,29 @@ export const getAllUsers = async (accessToken, dispatch) => {
   }
 };
 
-export const deleteUser = async (accessToken, dispatch,id) => {
+export const deleteUser = async (accessToken, dispatch, id) => {
   dispatch(deleteUsersStart());
   try {
     //gửi request tới data xoá
     const res = await axios.delete(`http://localhost:8000/users/delete/${id}`, {
       headers: { token: `Bearer ${accessToken}` },
     });
-    // console.log(res.data);
     dispatch(deleteUsersSuccess(res.data));
   } catch (error) {
     //Hiện ra lỗi kh thể xoá
     dispatch(deleteUsersFailed(error.response.data));
-    // console.log(error.response.data);
+  }
+};
+
+export const logOut = async (dispatch, id, navigate, accessToken) => {
+  dispatch(logOutStart());
+  try {
+    await axios.post("http://localhost:8000/auth/logout", id, {
+      headers: { token: `Bearer ${accessToken}` },
+    });
+    dispatch(logOutSuccess());
+    navigate("/login");
+  } catch (err) {
+    dispatch(logOutFailed());
   }
 };

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { loginUser, registerUser } from '../../redux/apiRequest';
+import { registerUser } from '../../redux/apiRequest';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import './Register.scss';
