@@ -3,9 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { deleteUser, getAllUsers } from '../../redux/apiRequest';
-import { createAxios } from "../../createInstance";
 import './Home.scss';
-import { loginSuccess } from '../../redux/authSlice';
 
 const Home = () => {
   //optional chaining : ?
@@ -17,7 +15,6 @@ const Home = () => {
   const user = useSelector(state => state.auth.login?.currentUser);
   const allUsers = useSelector(state => state.users.getUsers?.allUsers);
   const msg = useSelector(state => state.users.message);
-  let axiosJWT = createAxios(user, dispatch, loginSuccess);
 
   //Tạo toast message
   useEffect(() => {
