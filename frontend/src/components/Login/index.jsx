@@ -1,18 +1,24 @@
 import './Login.scss';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { loginUser } from '../../redux/apiRequest';
+import { useDispatch } from 'react-redux';
+
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = e => {
     e.preventDefault();
     const newUser = {
-      username: username,
+      userName: username,
       password: password,
     };
-    // loginUser(newUser, dispatch, navigate);
+    loginUser(newUser, dispatch, navigate);
   };
+
   return (
     <section className="login-container">
       <div className="login-title"> Log in</div>

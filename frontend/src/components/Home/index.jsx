@@ -1,45 +1,47 @@
-import React from 'react';
-import "./Home.scss";
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { deleteUser, getAllUsers } from '../../redux/apiRequest';
+import './Home.scss';
+
 const Home = () => {
-  const userData = [
-    {
-      username: 'anhduy1202',
-    },
-    {
-      username: 'kelly1234',
-    },
-    {
-      username: 'danny5678',
-    },
-    {
-      username: 'kenny1122',
-    },
-    {
-      username: 'jack1234',
-    },
-    {
-      username: 'loi1202',
-    },
-    {
-      username: 'nhinhi2009',
-    },
-    {
-      username: 'kellynguyen1122',
-    },
-  ];
+  //optional chaining : ?
+  //ternary operation: ? : if
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  //Lấy data từ store redux
+  const user = useSelector(state => state.auth.login?.currentUser);
+  const allUsers = useSelector(state => state.users.getUsers?.allUsers);
+  const msg = useSelector(state => state.users.message);
+  useEffect(()=>{
+    if(msg) toast(msg);
+  },[msg])
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+    getAllUsers(user?.accessToken, dispatch);
+    // console.log('data:', data);
+  }, []);
+  const handleDelete = (id)=>{
+    deleteUser(user.accessToken,dispatch,id);
+  }
   return (
     <div className="home-container">
       <div className="home-title">User List</div>
       <div className="home-userlist">
-        {userData.map(user => {
-          return (
-            <div className="user-container">
-              <div className="home-user">{user.username}</div>
-              <div className="delete-user"> Delete </div>
-            </div>
-          );
-        })}
+        {allUsers &&
+          allUsers.map((user, index) => {
+            return (
+              <div key={index} className="user-container">
+                <div className="home-user">{user.userName}</div>
+                <div className="delete-user" onClick={()=>handleDelete(user._id)}> Delete </div>
+              </div>
+            );
+          })}
       </div>
+      {msg}
     </div>
   );
 };
