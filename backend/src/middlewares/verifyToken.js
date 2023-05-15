@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 import dotenv from 'dotenv';
 
+dotenv.config();
+
 const verifyToken = (req, res, next) => {
   //Lấy token từ người dùng
   const token = req.headers.token;
